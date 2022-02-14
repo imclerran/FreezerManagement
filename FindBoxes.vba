@@ -1,3 +1,5 @@
+' TODO: refactor (everything)
+
 Sub Find_Boxes()
     Worksheets("New Shelf Grid").Activate
     Dim targetDate As Date
@@ -91,6 +93,18 @@ Sub Search_Pallets(targetDate As Date, targetDate2 As Date)
     Next
 End Sub
 
+Sub Reset_Pallets()
+    Dim colNum As Integer
+    Dim rowNum As Integer
+    For colNum = 1 To 15 Step 2
+        rowNum = 38
+         While (Not IsEmpty(Cells(rowNum, colNum)))
+         Call Highlight_Wide_Box(colNum, rowNum, Get_Background_Color(rowNum, colNum, False))
+            rowNum = rowNum + 1
+         Wend
+    Next
+End Sub
+
 Function Date_In_Range(targetDate As Date, rangeStart As Date, rangeEnd As Date) As Boolean
     Date_In_Range = False
     If DateDiff("y", targetDate, rangeStart) <= 0 Then
@@ -132,3 +146,4 @@ Private Function Get_Background_Color(rowNum, colNum, isExpired As Boolean)
         Get_Background_Color = RGB(219, 219, 219)
     End If
 End Function
+
