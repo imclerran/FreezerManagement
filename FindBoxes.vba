@@ -1,23 +1,32 @@
 Sub Find_Boxes()
     Worksheets("New Shelf Grid").Activate
     Dim targetDate As Date
+    Dim targetDate2 As Date
     targetDate = Cells(30, 20).Value
-    Call Search_Fry(targetDate)
-    Call Search_L2(targetDate)
-    Call Search_NSP(targetDate)
-    Call Search_Pallets(targetDate)
+    If Not IsEmpty(Cells(31, 20)) Then
+        targetDate2 = Cells(31, 20).Value
+    Else
+        targetDate2 = targetDate
+    End If
+    Call Search_Fry(targetDate, targetDate2)
+    Call Search_L2(targetDate, targetDate2)
+    Call Search_NSP(targetDate, targetDate2)
+    Call Search_Overflow(targetDate, targetDate2)
+    Call Search_Pallets(targetDate, targetDate2)
 End Sub
 
-Sub Search_Range(targetDate As Date, rowStart, rowEnd, colStart, colEnd)
+Sub Search_Range(targetDate As Date, targetDate2, rowStart, rowEnd, colStart, colEnd)
     Dim Date1 As Date
     Dim date2 As Date
     For rowNum = rowStart To rowEnd Step 2
         For colNum = colStart To colEnd Step 1
             Date1 = Cells(rowNum, colNum)
+            date2 = Cells(rowNum + 1, colNum)
             If IsEmpty(Cells(rowNum, colNum)) Then
                 Call Highlight_Box(colNum, rowNum, BackgroundColor(rowNum))
+            ElseIf Not targetDate = targetDate2 Then
+                If Date1 = targetDate And date2 = targetDate2 Then Call Highlight_Box(colNum, rowNum, FoundColor)
             ElseIf Not IsEmpty(Cells(rowNum + 1, colNum)) Then
-                date2 = Cells(rowNum + 1, colNum)
                 If Date_In_Range(targetDate, Date1, date2) Then Call Highlight_Box(colNum, rowNum, FoundColor)
             ElseIf Date1 = targetDate Then
                 Call Highlight_Box(colNum, rowNum, FoundColor)
@@ -26,7 +35,7 @@ Sub Search_Range(targetDate As Date, rowStart, rowEnd, colStart, colEnd)
     Next
 End Sub
 
-Sub Search_Vertical_To_End(targetDate As Date, rowStart As Integer, colStart As Integer)
+Sub Search_Vertical_To_End(targetDate As Date, targetDate2, rowStart As Integer, colStart As Integer)
     Dim rowNum As Integer
     Dim colNum As Integer
     Dim Date1 As Date
@@ -42,6 +51,12 @@ Sub Search_Vertical_To_End(targetDate As Date, rowStart As Integer, colStart As 
             Else
                 Call Highlight_Wide_Box(colNum, rowNum, Get_Background_Color(rowNum, colNum, False))
             End If
+        ElseIf Not targetDate = targetDate2 Then
+            If Date1 = targetDate And date2 = targetDate2 Then
+                Call Highlight_Wide_Box(colNum, rowNum, FoundColor)
+            Else
+                Call Highlight_Wide_Box(colNum, rowNum, Get_Background_Color(rowNum, colNum, False))
+            End If
         Else
             If Date_In_Range(targetDate, Date1, date2) Then
                 Call Highlight_Wide_Box(colNum, rowNum, FoundColor)
@@ -53,22 +68,26 @@ Sub Search_Vertical_To_End(targetDate As Date, rowStart As Integer, colStart As 
     Wend
 End Sub
 
-Sub Search_Fry(targetDate As Date)
-    Call Search_Range(targetDate, 4, 19, 2, 17)
+Sub Search_Fry(targetDate As Date, targetDate2 As Date)
+    Call Search_Range(targetDate, targetDate2, 4, 19, 2, 17)
 End Sub
 
-Sub Search_L2(targetDate As Date)
-    Call Search_Range(targetDate, 21, 22, 2, 17)
+Sub Search_L2(targetDate As Date, targetDate2 As Date)
+    Call Search_Range(targetDate, targetDate2, 21, 22, 2, 17)
 End Sub
 
-Sub Search_NSP(targetDate As Date)
-    Call Search_Range(targetDate, 24, 29, 2, 13)
+Sub Search_NSP(targetDate As Date, targetDate2 As Date)
+    Call Search_Range(targetDate, targetDate2, 24, 29, 2, 13)
 End Sub
 
-Sub Search_Pallets(targetDate As Date)
+Sub Search_Overflow(targetDate As Date, targetDate2 As Date)
+    Call Search_Range(targetDate, targetDate2, 31, 34, 2, 17)
+End Sub
+
+Sub Search_Pallets(targetDate As Date, targetDate2 As Date)
     Dim colNum As Integer
     For colNum = 1 To 15 Step 2
-        Call Search_Vertical_To_End(targetDate, 38, colNum)
+        Call Search_Vertical_To_End(targetDate, targetDate2, 38, colNum)
     Next
 End Sub
 
@@ -113,4 +132,3 @@ Private Function Get_Background_Color(rowNum, colNum, isExpired As Boolean)
         Get_Background_Color = RGB(219, 219, 219)
     End If
 End Function
-
