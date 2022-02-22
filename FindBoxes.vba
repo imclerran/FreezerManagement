@@ -47,14 +47,14 @@ Sub Search_Vertical_To_End(targetDate As Date, targetDate2, rowStart As Integer,
     While (Not IsEmpty(Cells(rowNum, colNum)))
         Date1 = Cells(rowNum, colNum)
         date2 = Cells(rowNum, colNum + 1)
-        If IsEmpty(Cells(rowNum, colNum + 1)) Then
-            If Date1 = targetDate Then
+        If Not targetDate = targetDate2 Then ' Match exact date
+            If Date1 = targetDate And date2 = targetDate2 Then
                 Call Highlight_Wide_Box(colNum, rowNum, FoundColor)
             Else
                 Call Highlight_Wide_Box(colNum, rowNum, Get_Background_Color(rowNum, colNum, False))
             End If
-        ElseIf Not targetDate = targetDate2 Then
-            If Date1 = targetDate And date2 = targetDate2 Then
+        ElseIf IsEmpty(Cells(rowNum, colNum + 1)) Then
+            If Date1 = targetDate Then
                 Call Highlight_Wide_Box(colNum, rowNum, FoundColor)
             Else
                 Call Highlight_Wide_Box(colNum, rowNum, Get_Background_Color(rowNum, colNum, False))
